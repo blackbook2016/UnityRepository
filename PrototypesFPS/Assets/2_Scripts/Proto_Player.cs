@@ -5,67 +5,71 @@ using System.Collections;
 
 public class Proto_Player : MonoBehaviour {
 
-	Transform cam;
-	public Transform prefab;
-	public Image iconLoading;
-	public Image paintingToShow;
 
-//	private bool loaded = false;
-	private bool isPaintingShown = false;
+	public Transform uiLoading;
+	public Image iconLoading;
+	public Image paintingToShow;	
 	public Blur blur;
 
+	private bool isPaintingShown = false;
+	private bool isLoadingPainting = false;
+	private Transform cam;
+
+	void Awake()
+	{		
+		cam = Camera.main.transform;
+	}
 	void Start () 
 	{
-		cam = Camera.main.transform;
+		RemovePaintingInfo();
 	}
 
 	void Update () 
 	{
 		RaycastHit hit;
-//		if(!isPaintingShown)
-//		{
-			if(Physics.Raycast (cam.position, cam.forward, out hit) && hit.collider.tag == "StreetArt" && prefab != null)
+		if(Physics.Raycast (cam.position, cam.forward, out hit) && hit.collider.tag == "StreetArt" && uiLoading != null)
+		{
+			if(!isPaintingShown)
 			{
-	//			print (hit.collider);
-				Vector3 direction = hit.collider.transform.position - cam.position ;
-				prefab.position = hit.collider.transform.position + (hit.normal * 0.1F) ;
-				prefab.rotation = hit.collider.transform.rotation;
-				prefab.gameObject.SetActive(true);
+				uiLoading.position = hit.collider.transform.position + (hit.normal * 0.1F) ;
+				uiLoading.rotation = hit.collider.transform.rotation;
+				uiLoading.gameObject.SetActive(true);
+
 				iconLoading.fillAmount +=  Time.deltaTime;
-				if(iconLoading.fillAmount == 1)
-				{
-//					loaded = true;
-					isPaintingShown = true;
-					ShowPaintingInfo(hit.collider.GetComponent<MeshRenderer>().material.mainTexture);
-					
-//					paintingToShow.material = hit.collider.GetComponent<MeshRenderer>().material;
-				}
-			}	
-			else
+				isLoadingPainting = true;
+			}		
+			if(iconLoading.fillAmount == 1 || isPaintingShown)
 			{
-				if(isPaintingShown)
-					RemovePaintingInfo();
-				prefab.gameObject.SetActive(false);
-				iconLoading.fillAmount = 0;
+				isPaintingShown = true;
+				ShowPaintingInfo(hit.collider.GetComponent<MeshRenderer>().material.mainTexture);
 			}
-//		}
+		}	
+		else
+		{
+			if(isPaintingShown || isLoadingPainting)
+				RemovePaintingInfo();
+		}
+
+		if(Input.GetButton("Cancel"))
+			RemovePaintingInfo();
+
 	}
 
 	void ShowPaintingInfo(Texture painting)
 	{
-//		blur.enabled = true;
+		blur.enabled = true;
 		paintingToShow.enabled = true;
-//		paintingToShow.sprite = Sprite.Create(painting,new Rect(),new Vector2(0.5f, 0.5f));
-//		paintingToShow.material.mainTexture = painting;
-		//Pause: Stop player Input
 	}
 
 	void RemovePaintingInfo()
 	{
 		blur.enabled = false;
 		paintingToShow.enabled = false;
-		//Disable Blur effect
-		//Unpause Player
+		iconLoading.fillAmount = 0;
+		
+		uiLoading.gameObject.SetActive(false);
+
+		isLoadingPainting = false;
 		isPaintingShown = false;
 	}
 }

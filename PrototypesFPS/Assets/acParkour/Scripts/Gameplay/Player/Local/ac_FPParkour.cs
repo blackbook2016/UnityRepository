@@ -1282,7 +1282,7 @@ public class ac_FPParkour : vp_Component
 		if(WallRunTilt == 0)
 			return;
 
-		print (WallAngle);
+//		print (WallAngle);****************************************************************************************************************************************************************************
 
 		Vector3 localVelocity = GetLocalVelocity() * 0.016f ;
 
