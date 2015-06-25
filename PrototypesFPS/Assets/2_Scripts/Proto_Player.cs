@@ -11,6 +11,9 @@ public class Proto_Player : MonoBehaviour {
 	public Image paintingToShow;	
 	public Blur blur;
 
+	public float rayDistance = 10;
+	public int blurMax = 3;
+
 	private bool isPaintingShown = false;
 	private bool isLoadingPainting = false;
 	private Transform cam;
@@ -21,52 +24,63 @@ public class Proto_Player : MonoBehaviour {
 	}
 	void Start () 
 	{
+		blurMax = blur.iterations;
 		RemovePaintingInfo();
 	}
 
 	void Update () 
 	{
-		RaycastHit hit;
-		if(Physics.Raycast (cam.position, cam.forward, out hit) && hit.collider.tag == "StreetArt" && uiLoading != null)
+		if(Input.GetButton("joystickB"))
 		{
-			if(!isPaintingShown)
+			RaycastHit hit;
+			if(Physics.Raycast (cam.position, cam.forward, out hit, rayDistance) && hit.collider.tag == "StreetArt" && uiLoading != null)
 			{
-				uiLoading.position = hit.collider.transform.position + (hit.normal * 0.1F) ;
-				uiLoading.rotation = hit.collider.transform.rotation;
-				uiLoading.gameObject.SetActive(true);
+				if(!isPaintingShown)
+				{
+					uiLoading.position = hit.collider.transform.position + (hit.normal * 0.1F) ;
+					uiLoading.rotation = hit.collider.transform.rotation;
+					uiLoading.gameObject.SetActive(true);
 
-				iconLoading.fillAmount +=  Time.deltaTime;
-				isLoadingPainting = true;
-			}		
-			if(iconLoading.fillAmount == 1 || isPaintingShown)
+					iconLoading.fillAmount +=  Time.deltaTime;
+					isLoadingPainting = true;
+				}		
+				if(iconLoading.fillAmount == 1 || isPaintingShown)
+				{
+					isPaintingShown = true;
+					ShowPaintingInfo(hit.collider.GetComponent<MeshRenderer>().material.mainTexture);
+				}
+			}	
+			else
 			{
-				isPaintingShown = true;
-				ShowPaintingInfo(hit.collider.GetComponent<MeshRenderer>().material.mainTexture);
+				if(isPaintingShown || isLoadingPainting)
+					RemovePaintingInfo();
 			}
-		}	
+		}
 		else
 		{
 			if(isPaintingShown || isLoadingPainting)
 				RemovePaintingInfo();
 		}
-
-		if(Input.GetButton("Cancel"))
-			RemovePaintingInfo();
-
+		
 	}
-
+	
 	void ShowPaintingInfo(Texture painting)
 	{
 		blur.enabled = true;
 		paintingToShow.enabled = true;
+		paintingToShow.CrossFadeAlpha(Time.deltaTime * 355.0F,5.0f,true);
+		if(blur.iterations < blurMax)
+			blur.iterations += (int)(Time.deltaTime );
 	}
 
 	void RemovePaintingInfo()
 	{
 		blur.enabled = false;
-		paintingToShow.enabled = false;
-		iconLoading.fillAmount = 0;
-		
+		paintingToShow.enabled = false;	
+		paintingToShow.CrossFadeAlpha(0F,2.0f,true);
+		iconLoading.fillAmount = 0;	
+		blur.iterations = 0;
+
 		uiLoading.gameObject.SetActive(false);
 
 		isLoadingPainting = false;
