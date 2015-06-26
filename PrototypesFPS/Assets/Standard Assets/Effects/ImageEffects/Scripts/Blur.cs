@@ -8,7 +8,7 @@ namespace UnityStandardAssets.ImageEffects
     public class Blur : MonoBehaviour
     {
         /// Blur iterations - larger number means more blur.
-        public int iterations = 3;
+		public int iterations = 3;
 
         /// Blur spread for each iteration. Lower values
         /// give better looking blur, but require more iterations to
@@ -58,9 +58,9 @@ namespace UnityStandardAssets.ImageEffects
         }
 
         // Performs one blur iteration.
-        public void FourTapCone (RenderTexture source, RenderTexture dest, int iteration)
+		public void FourTapCone (RenderTexture source, RenderTexture dest, float iteration)
         {
-            float off = 0.5f + iteration*blurSpread;
+            float off = iteration * blurSpread;
             Graphics.BlitMultiTap (source, dest, material,
                                    new Vector2(-off, -off),
                                    new Vector2(-off,  off),
@@ -91,7 +91,7 @@ namespace UnityStandardAssets.ImageEffects
             DownSample4x (source, buffer);
 
             // Blur the small texture
-            for(int i = 0; i < iterations; i++)
+			for(int i = 0; i < iterations; i++)
             {
                 RenderTexture buffer2 = RenderTexture.GetTemporary(rtW, rtH, 0);
                 FourTapCone (buffer, buffer2, i);
