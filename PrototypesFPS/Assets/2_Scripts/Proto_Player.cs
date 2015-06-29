@@ -21,7 +21,6 @@
 		private  Transform cam;
 		private bool isPaintingShown = false;
 		private bool isLoadingPainting = false;
-		private Sprite painting = new Sprite();
 
 		void Awake()
 		{		
@@ -39,7 +38,7 @@
 				RaycastHit hit;
 //				if(Physics.Raycast (camPosition.position, cam.forward.normalized, out hit, rayDistance, 1<<19|1<<20))
 //					Debug.DrawLine(camPosition.position, hit.point,Color.red);
-				if(Physics.Raycast (cam.position, cam.forward, out hit, rayDistance, 1<<19|1<<20) && hit.collider.tag == "StreetArt")
+				if(Physics.Raycast (cam.position, cam.forward, out hit, rayDistance, 1<<19 | 1<<20) && hit.collider.tag == "StreetArt")
 				{
 
 					if(!isPaintingShown)
@@ -81,6 +80,8 @@
 			{
 				blur.blurSpread += Time.deltaTime * blurSpreadMax;
 			}
+			PaintingManager.instance.ShowText(painting.name);
+//			PaintingManager.instance
 		}
 
 		void RemovePaintingInfo()
@@ -95,6 +96,7 @@
 
 			isLoadingPainting = false;
 			isPaintingShown = false;
+			PaintingManager.instance.RemoveText();
 		}
 	}
 }
