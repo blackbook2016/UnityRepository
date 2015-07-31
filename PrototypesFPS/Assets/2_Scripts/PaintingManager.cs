@@ -29,10 +29,11 @@
 		{
 			ReadJSON rj = GetComponent<ReadJSON>();
 			paintings = rj.ReadJson();
+			print(paintings.Count);
 		}
 		void Start()
 		{ 
-			ShowText("banksy");
+//			ShowText("banksy_Sprite");
 		}
 
 		public Sprite PaintingSprite(string paintingName)

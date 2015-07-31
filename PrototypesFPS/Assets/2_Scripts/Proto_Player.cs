@@ -72,6 +72,7 @@
 		
 		void ShowPaintingInfo(Sprite painting)
 		{
+			print (painting.name);
 			blur.enabled = true;
 			paintingToShow.sprite = painting;
 			paintingToShow.enabled = true;
